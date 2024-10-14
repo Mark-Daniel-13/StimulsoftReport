@@ -1,0 +1,28 @@
+﻿@page "/"
+@using Stimulsoft.Report
+@using Stimulsoft.Report.Blazor
+@inject HttpClient Http
+
+<PageTitle>Home</PageTitle>
+
+ <StiBlazorViewer Report="@Report" />
+
+
+@code {
+    StiReport? Report;
+    bool isLoaded = false;
+    protected override async Task OnInitializedAsync()
+    {
+        // Load the report
+        var report = StiReport.CreateNewReport();
+        var bytes = await Http.GetByteArrayAsync("https://devhcmhost.blob.core.windows.net/reports/TestReportConn.mrt");
+        report.Load(bytes);
+        Report = report;
+        Report.Dictionary.Synchronize();
+        Report.Render();
+        isLoaded = true;
+        StateHasChanged();
+        await base.OnInitializedAsync();
+    }
+
+}
